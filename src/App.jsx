@@ -9,11 +9,13 @@ import Appearancepage from "./pages/profiledetailpage/Appearancepage";
 import Workpage from "./pages/profiledetailpage/Workpage";
 import Connectionspage from "./pages/profiledetailpage/Connectionspage";
 import IndexProfile from "./pages/profiledetailpage/IndexProfile";
+import Intropage from "./pages/Intropage";
 
 const App = () => {
   return (
     <div>
       <Routes>
+      <Route path="/intro" element={<Intropage />} />
         <Route path="/" element={<Homepage />}>
           <Route path="/:id" element={<HeroProfile />}>
             <Route index element={<IndexProfile />} />

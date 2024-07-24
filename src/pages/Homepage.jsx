@@ -1,5 +1,5 @@
 // src/pages/Homepage.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import "animate.css";
 import HeroCard from "../component/heroComponetnt/HeroCard";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,20 +10,38 @@ import {
   setFilterInput,
   setIsSearch,
 } from "../store/heroSlice";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
+  const nav = useNavigate();
   const dispatch = useDispatch();
-  const { isfavBtn, input, filterInput, isSearch } = useSelector(
+  const { isfavBtn, input, filterInput, isSearch, isIntro } = useSelector(
     (state) => state.hero
   );
   const favArr = useSelector((state) => state.favorites.favArr);
   const isProfileOpen = useSelector((state) => state.profileOpen.isProfileOpen);
-  const { searchData,moreHandle,data} = MyComponent(input, { skip: !input });
+  const {
+    searchData,
+    moreHandle,
+    data,
+    searchError,
+    isError,
+    isLoading,
+    isSearchLoading,
+  } = MyComponent(input);
+  console.log(searchError, isError, isLoading, isSearchLoading);
 
   const resultsCount = searchData?.results?.length || 0;
   const message = `Result for (${
-    resultsCount > 0 ? resultsCount : ""
+    resultsCount > 0 ? resultsCount : "0"
   }) : ${input}`;
+
+  useEffect(() => {
+    if (isIntro) {
+      nav("/intro");
+    }
+  }),
+    [isIntro];
 
   return (
     <div className={`${isProfileOpen && "fixed"} `}>
@@ -170,26 +188,32 @@ const Homepage = () => {
           </div>
 
           <div className="w-full z-30 bg-gray-300">
-            {filterInput ? (
+            {isLoading || isSearchLoading ? (
+              <HeroCard />
+            ) : isError || searchError ? (
+              <HeroCard />
+            ) : filterInput ? (
               <HeroCard />
             ) : isfavBtn ? (
               <HeroCard />
             ) : isSearch ? (
               <HeroCard searchData={searchData} />
-            ) : data && (
-              <HeroCard data={data}/>
+            ) : (
+              data && <HeroCard data={data} />
             )}
           </div>
 
           <div className="sticky top-0 z-50 border-b-2 border-black bg-gray-400 flex justify-between px-2 py-2">
-            {!filterInput && !isfavBtn && !isSearch && <>
-              <button
-            onClick={()=>moreHandle()}
-            className="bg-gray-700 text-white px-2 py-1 rounded-md"
-          >
-            More...
-          </button>
-            </>}
+            {!filterInput && !isfavBtn && !isSearch && (
+              <>
+                <button
+                  onClick={() => moreHandle()}
+                  className="bg-gray-700 text-white px-2 py-1 rounded-md"
+                >
+                  More...
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
